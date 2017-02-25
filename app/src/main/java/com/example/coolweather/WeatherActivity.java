@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.coolweather.gson.Forecast;
 import com.example.coolweather.gson.Weather;
+import com.example.coolweather.service.AutoUpdateService;
 import com.example.coolweather.utils.HttpUtils;
 import com.example.coolweather.utils.Utility;
 
@@ -31,6 +32,9 @@ import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+
+import static com.example.coolweather.Constant.URL_BING_PIC;
+import static com.example.coolweather.Constant.URL_WEATHER_FORMAT;
 
 public class WeatherActivity extends AppCompatActivity {
 
@@ -117,8 +121,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 加载必应每日一图
      */
     private void loadBingPic() {
-        String requestBingPic = "http://guolin.tech/api/bing_pic";
-        HttpUtils.sendOkHttpRequest(requestBingPic, new Callback() {
+        HttpUtils.sendOkHttpRequest(URL_BING_PIC, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
@@ -153,8 +156,7 @@ public class WeatherActivity extends AppCompatActivity {
      */
     public void requestWeather(String weatherId) {
         mCurWeatherId = weatherId;
-        String weatherUrl = "Http://guolin.tech/api/weather?cityid=" +
-                weatherId + "&key=508b9b67f9f946a2a6ec952cb4256a5d";
+        String weatherUrl = String.format(URL_WEATHER_FORMAT, weatherId);
         HttpUtils.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -232,5 +234,8 @@ public class WeatherActivity extends AppCompatActivity {
         mCarWashText.setText(carWash);
         mSportText.setText(sport);
         mWeatherLayout.setVisibility(View.VISIBLE);
+
+        Intent intent = new Intent(this, AutoUpdateService.class);
+        startService(intent);
     }
 }
